@@ -11,6 +11,7 @@ import {
   X,
   Calculator,
   Wheat,
+  CalendarDays
 } from "lucide-react"
 
 const navItems = [
@@ -28,6 +29,7 @@ const navItems = [
   { to: "/crop-doctor", label: "AI Crop Doctor", icon: Stethoscope },
   { to: "/chat", label: "Yadu AI Chat", icon: MessageCircle },
   { to: "/profile", label: "Profile", icon: User },
+  { to: "/crop-calendar", label: "Crop Calendar", icon: CalendarDays },
 ]
 
 function NavItems({ onNavigate }) {

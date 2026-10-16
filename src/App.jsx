@@ -16,7 +16,7 @@ import DashboardLayout from './components/DashboardLayout'
 import { useFarmer } from './context/FarmerContext'
 import CropRecommendation from './pages/CropRecommendation'
 import FarmEconomics from './pages/FarmEconomics'
-
+import CropCalendar from './pages/CropCalendar'
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useFarmer()
@@ -50,6 +50,7 @@ export default function App() {
         <Route path="/farm-economics" element={<FarmEconomics />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/crop-calendar" element={<CropCalendar />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

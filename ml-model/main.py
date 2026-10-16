@@ -91,9 +91,10 @@ def predict_crop(data: CropInput):
 # 5. Find weather by village name
 # --------------------------------------------------
 
+
 @app.get("/weather-by-location")
 def weather_by_location(village: str):
-    # Step 1: Search for the village or location
+    # Step 1: Search for the location
     try:
         geo_response = requests.get(
             "https://geocoding-api.open-meteo.com/v1/search",
@@ -114,13 +115,101 @@ def weather_by_location(village: str):
             detail="Could not reach the location service.",
         ) from exc
 
-    candidates = geo_data.get("results", [])
+    candidates = geo_data.get("results") or []
 
     if not candidates:
         raise HTTPException(
             status_code=404,
-            detail="No locations found for this search term.",
+            detail=f"No locations found for '{village}'.",
         )
+
+    def normalize(value):
+        return str(value or "").strip().casefold()
+
+    # Prefer a match in Chhattisgarh, India.
+    matches = [
+        place for place in candidates
+        if normalize(place.get("country_code")) == "in"
+        and normalize(place.get("admin1")) == "chhattisgarh"
+    ]
+
+    # If no Chhattisgarh match exists, return candidates
+    # instead of silently selecting a location elsewhere.
+    if not matches:
+        return {
+            "message": "Please verify the location.",
+            "search_term": village,
+            "candidates": [
+                {
+                    "name": place.get("name"),
+                    "country": place.get("country"),
+                    "state": place.get("admin1"),
+                    "district": place.get("admin2"),
+                }
+                for place in candidates
+            ],
+        }
+
+    place = matches[0]
+    latitude = place["latitude"]
+    longitude = place["longitude"]
+
+    # Step 2: Fetch current weather and a 7-day forecast.
+    try:
+        weather_response = requests.get(
+            "https://api.open-meteo.com/v1/forecast",
+            params={
+                "latitude": latitude,
+                "longitude": longitude,
+                "current": (
+                    "temperature_2m,"
+                    "relative_humidity_2m,"
+                    "precipitation"
+                ),
+                "daily": "precipitation_sum",
+                "forecast_days": 7,
+                "timezone": "Asia/Kolkata",
+            },
+            timeout=15,
+        )
+        weather_response.raise_for_status()
+        weather_data = weather_response.json()
+
+    except requests.RequestException as exc:
+        raise HTTPException(
+            status_code=502,
+            detail="Could not retrieve weather data.",
+        ) from exc
+
+    current = weather_data.get("current") or {}
+    daily = weather_data.get("daily") or {}
+
+    # Step 3: Return a JSON object for the frontend.
+    return {
+        "location": {
+            "village": place.get("name"),
+            "district": place.get("admin2"),
+            "state": place.get("admin1"),
+            "country": place.get("country"),
+            "latitude": latitude,
+            "longitude": longitude,
+        },
+        "weather": {
+            "temperature_c": current.get("temperature_2m"),
+            "humidity_percent": current.get(
+                "relative_humidity_2m"
+            ),
+            "current_precipitation_mm": current.get(
+                "precipitation"
+            ),
+            "forecast_dates": daily.get("time", []),
+            "forecast_rainfall_mm": daily.get(
+                "precipitation_sum", []
+            ),
+        },
+        "source": "Open-Meteo",
+    }
+
 
 # --------------------------------------------------
 # 6. Automatic seasonal rainfall analysis
