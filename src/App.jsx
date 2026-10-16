@@ -17,6 +17,7 @@ import { useFarmer } from './context/FarmerContext'
 import CropRecommendation from './pages/CropRecommendation'
 import FarmEconomics from './pages/FarmEconomics'
 import CropCalendar from './pages/CropCalendar'
+import GovSchemes from './pages/GovSchemes'
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useFarmer()
@@ -48,6 +49,7 @@ export default function App() {
         <Route path="/soil" element={<Soil />} />
         <Route path="/market" element={<Market />} />
         <Route path="/farm-economics" element={<FarmEconomics />} />
+        <Route path="/schemes" element={<GovSchemes />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/crop-calendar" element={<CropCalendar />} />
