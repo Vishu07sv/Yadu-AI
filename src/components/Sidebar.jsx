@@ -10,6 +10,7 @@ import {
   User,
   X,
   Calculator,
+  Landmark,
   Wheat,
 } from "lucide-react"
 
@@ -25,6 +26,7 @@ const navItems = [
   { to: "/soil", label: "Soil", icon: Mountain },
   { to: "/market", label: "Market Prices", icon: LineChart },
   { to: "/farm-economics", label: "Farm Economics", icon: Calculator },
+  { to: "/schemes", label: "Govt Schemes", icon: Landmark },
   { to: "/crop-doctor", label: "AI Crop Doctor", icon: Stethoscope },
   { to: "/chat", label: "Yadu AI Chat", icon: MessageCircle },
   { to: "/profile", label: "Profile", icon: User },

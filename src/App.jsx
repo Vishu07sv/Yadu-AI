@@ -16,6 +16,7 @@ import DashboardLayout from './components/DashboardLayout'
 import { useFarmer } from './context/FarmerContext'
 import CropRecommendation from './pages/CropRecommendation'
 import FarmEconomics from './pages/FarmEconomics'
+import GovSchemes from './pages/GovSchemes'
 
 
 function ProtectedRoute({ children }) {
@@ -48,6 +49,7 @@ export default function App() {
         <Route path="/soil" element={<Soil />} />
         <Route path="/market" element={<Market />} />
         <Route path="/farm-economics" element={<FarmEconomics />} />
+        <Route path="/schemes" element={<GovSchemes />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
